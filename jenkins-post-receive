@@ -1,0 +1,39 @@
+#!/bin/bash
+
+read oldrev newrev refname
+target_branch=${refname#refs/heads/}
+
+# Lets grab the name of the last committer on the branch so we can pass it to Jenkins
+last_committer=$(git log --pretty="format: %cN" -1 $newrev | sed -e 's/^ *//g' -e 's/ *$//g')
+
+# Lets also check to make sure this commit isn't a --skip-ci
+commit_message=$(git log --pretty="format: %s" -1 $newrev)
+
+#figure out whether or not to skip ci, we don't allow it on integration or master
+skip_ci="false"
+
+if [[ "$commit_message" =~ \-\-skip-ci ]]
+then
+  if [[ ! "$target_branch" =~ ^integration\/* ]] && [[ ! "$target_branch" =~ ^master\/* ]]
+  then
+    skip_ci="true"
+  else
+    skip_ci="false"
+    echo "--skip-ci ignored for integration and master branches"
+  fi
+fi
+
+# Firing off the build
+if [ $skip_ci == "true" ]
+then
+  echo "--skip-ci passed, CI build not triggered for $target_branch"
+else
+  # we don't want to trigger a build on pushing up branch tags
+  if [[ "$target_branch" =~ ^refs\/tags\/* ]]
+  then
+    echo "CI build not triggered for $target_branch"
+  else
+    curl -G --data-urlencode "token=$JENKINS_BUILD_TOKEN" --data-urlencode "BRANCH=$target_branch" --data-urlencode "LAST_COMMITTER=$last_committer" "http://$JENKINS_SERVER/job/$JENKINS_JOB_NAME/buildWithParameters"
+    echo "Triggered CI build for $target_branch with the last committer being $last_committer"
+  fi
+fi
