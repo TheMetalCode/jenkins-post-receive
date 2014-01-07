@@ -1,8 +1,5 @@
 #!/bin/bash
 
-echo $TARGET_BRANCH
-echo $LAST_COMMITTER
-
 # Pull the git commit message
 commit_message=$(git log --pretty="format: %s" -1 $newrev)
 
@@ -23,7 +20,7 @@ fi
 # Firing off the build
 if [ $skip_ci == "true" ]
 then
-  echo "--skip-ci passed, CI build not triggered for $target_branch"
+  echo "--skip-ci passed, CI build not triggered for $TARGET_BRANCH"
 else
   # we don't want to trigger a build on pushing up branch tags
   if [[ "$TARGET_BRANCH" =~ ^refs\/tags\/* ]]
