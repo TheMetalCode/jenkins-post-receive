@@ -25,6 +25,8 @@ Running this in the context of a git post-receive hook would look something like
 read oldrev newrev refname
 
 # Define varables that the various scripts below will need
+JENKINS_USERNAME=jenkins user authorized to kick off builds
+JENKINS_PASSWORD=password for above user
 JENKINS_SERVER="your_jenkins_server" #no http:// necessary
 JENKINS_JOB_NAME="your_jenkins_job_name"
 JENKINS_BUILD_TOKEN="your_configured_build_token"

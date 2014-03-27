@@ -27,7 +27,7 @@ else
   then
     echo "CI build not triggered for $TARGET_BRANCH"
   else
-    curl -G --data-urlencode "token=$JENKINS_BUILD_TOKEN" --data-urlencode "BRANCH=$TARGET_BRANCH" --data-urlencode "LAST_COMMITTER=$LAST_COMMITTER" "http://$JENKINS_SERVER/job/$JENKINS_JOB_NAME/buildWithParameters"
+    curl -G --data-urlencode "token=$JENKINS_BUILD_TOKEN" --data-urlencode "BRANCH=$TARGET_BRANCH" --data-urlencode "LAST_COMMITTER=$LAST_COMMITTER" "http://$JENKINS_USERNAME:$JENKINS_PASSWORD@$JENKINS_SERVER/job/$JENKINS_JOB_NAME/buildWithParameters"
     echo "Triggered CI build for $TARGET_BRANCH with the last committer being $LAST_COMMITTER"
   fi
 fi
